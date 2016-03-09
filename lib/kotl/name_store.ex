@@ -10,6 +10,14 @@ defmodule KOTL.NameStore do
     GenServer.start_link(__MODULE__, names, opts)
   end
 
+  def add_self(name) do
+    add_self(pid, name)
+  end
+
+  def add_self(pid, name) do
+    GenServer.cast(pid, {:add_self, location})
+  end
+
   def add(name, location) do
     add(__MODULE__, name, location)
   end
@@ -49,6 +57,11 @@ defmodule KOTL.NameStore do
 
   def handle_cast({:remove, name}, names) do
     new_names = Map.delete(names, name)
+    {:noreply, new_names}
+  end
+
+  def handle_call({:add_self, name}, from, names) do
+    new_names = Map.put(names, name, from)
     {:noreply, new_names}
   end
 
