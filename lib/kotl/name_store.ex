@@ -62,7 +62,7 @@ defmodule KOTL.NameStore do
 
   def handle_call({:add_self, name}, from, names) do
     new_names = Map.put(names, name, from)
-    {:noreply, new_names}
+    {:reply, new_names, new_names}
   end
 
   def handle_call(:names, _from, names) do
