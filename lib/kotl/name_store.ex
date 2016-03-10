@@ -1,4 +1,7 @@
 defmodule KOTL.NameStore do
+  @moduledoc """
+  Store for names and locations of other processes, machines and whatnot.
+  """
   use GenServer
 
   #######
@@ -10,12 +13,12 @@ defmodule KOTL.NameStore do
     GenServer.start_link(__MODULE__, names, opts)
   end
 
-  def add_self(name) do
+  def add_self_process(name) do
     add_self(pid, name)
   end
 
-  def add_self(pid, name) do
-    GenServer.cast(pid, {:add_self, location})
+  def add_self_process(pid, name) do
+    GenServer.cast(pid, {:add_self_process, location})
   end
 
   def add(name, location) do
@@ -60,7 +63,7 @@ defmodule KOTL.NameStore do
     {:noreply, new_names}
   end
 
-  def handle_call({:add_self, name}, from, names) do
+  def handle_call({:add_self_process, name}, from, names) do
     new_names = Map.put(names, name, from)
     {:reply, new_names, new_names}
   end
