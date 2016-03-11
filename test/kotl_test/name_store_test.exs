@@ -17,4 +17,13 @@ defmodule KOTLTest.NameStoreTest do
     this = self()
     %{own: ^this} = KOTL.NameStore.names(pid)
   end
+
+  test "change location" do
+    {:ok, _} = KOTL.NameStore.start_link
+    KOTL.NameStore.add(:own, self)
+    this = self()
+    %{own: ^this} = KOTL.NameStore.names
+    KOTL.NameStore.add(:own, "hay")
+    %{own: "hay"} = KOTL.NameStore.names
+  end
 end
