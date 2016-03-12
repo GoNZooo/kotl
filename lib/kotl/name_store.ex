@@ -24,7 +24,7 @@ defmodule KOTL.NameStore do
 
   @spec add(pid, Location.t) :: :ok
   def add(pid, spec) do
-    GenServer.cast(pid, {:add, {spec.type, spec.name}, spec.location})
+    GenServer.cast(pid, {:add, spec})
   end
 
   @spec remove(Location.t) :: :ok
@@ -34,7 +34,7 @@ defmodule KOTL.NameStore do
 
   @spec remove(pid, Location.t) :: :ok
   def remove(pid, spec) do
-    GenServer.cast(pid, {:remove, {spec.type, spec.name}})
+    GenServer.cast(pid, {:remove, spec})
   end
 
   @spec names :: map
@@ -55,13 +55,13 @@ defmodule KOTL.NameStore do
     {:ok, names}
   end
 
-  def handle_cast({:add, {type, name}, location}, names) do
-    new_names = Map.put(names, {type, name}, location)
+  def handle_cast({:add, spec}, names) do
+    new_names = Map.put(names, {spec.type, spec.name}, spec.location)
     {:noreply, new_names}
   end
 
-  def handle_cast({:remove, {type, name}}, names) do
-    new_names = Map.delete(names, {type, name})
+  def handle_cast({:remove, spec}, names) do
+    new_names = Map.delete(names, {spec.type, spec.name})
     {:noreply, new_names}
   end
 
