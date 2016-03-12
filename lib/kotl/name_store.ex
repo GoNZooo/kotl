@@ -6,34 +6,35 @@ defmodule KOTL.NameStore do
   to store locations of different kinds.
   """
   use GenServer
+  alias KOTL.Location
 
   #######
   # API #
   #######
 
-  def start_link(names \\ Map.new,
+  def start_link(names \\ Application.get_env(:kotl, :names),
                  opts \\ [name: __MODULE__]) do
     GenServer.start_link(__MODULE__, names, opts)
   end
 
-  @spec add(atom | String.t, pid) :: :ok
-  def add(name, location) do
-    add(__MODULE__, name, location)
+  @spec add(Location.t) :: :ok
+  def add(spec) do
+    add(__MODULE__, spec)
   end
 
-  @spec add(pid, atom | String.t, pid) :: :ok
-  def add(pid, name, location) do
-    GenServer.cast(pid, {:add, name, location})
+  @spec add(pid, Location.t) :: :ok
+  def add(pid, spec) do
+    GenServer.cast(pid, {:add, {spec.type, spec.name}, spec.location})
   end
 
-  @spec remove(atom | String.t) :: :ok
-  def remove(name) do
-    remove(__MODULE__, name)
+  @spec remove(Location.t) :: :ok
+  def remove(spec) do
+    remove(__MODULE__, spec)
   end
 
-  @spec remove(pid, atom | String.t) :: :ok
-  def remove(pid, name) do
-    GenServer.cast(pid, {:remove, name})
+  @spec remove(pid, Location.t) :: :ok
+  def remove(pid, spec) do
+    GenServer.cast(pid, {:remove, {spec.type, spec.name}})
   end
 
   @spec names :: map
