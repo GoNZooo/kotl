@@ -55,13 +55,13 @@ defmodule KOTL.NameStore do
     {:ok, names}
   end
 
-  def handle_cast({:add, name, location}, names) do
-    new_names = Map.put(names, name, location)
+  def handle_cast({:add, {type, name}, location}, names) do
+    new_names = Map.put(names, {type, name}, location)
     {:noreply, new_names}
   end
 
-  def handle_cast({:remove, name}, names) do
-    new_names = Map.delete(names, name)
+  def handle_cast({:remove, {type, name}}, names) do
+    new_names = Map.delete(names, {type, name})
     {:noreply, new_names}
   end
 
