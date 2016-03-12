@@ -1,6 +1,9 @@
 defmodule KOTL.NameStore do
   @moduledoc """
   Store for names and locations of other processes, machines and whatnot.
+
+  In terms of implementation, is a key/value store, but the purpose is
+  to store locations of different kinds.
   """
   use GenServer
 
