@@ -20,10 +20,10 @@ defmodule KOTL.NameStore do
   end
 
   @spec add(Location.t) :: :ok
-  def add(spec), do: add(__MODULE__, spec)
+  def add(spec = %Location{type: type, name: name}), do: add(__MODULE__, spec)
 
   @spec add(pid, Location.t) :: :ok
-  def add(pid, spec) do
+  def add(pid, spec = %Location{type: type, name: name}) do
     GenServer.cast(pid, {:add, spec})
   end
 
@@ -33,7 +33,9 @@ defmodule KOTL.NameStore do
   end
 
   @spec remove(Location.t) :: :ok
-  def remove(spec), do: remove(__MODULE__, spec)
+  def remove(spec = %Location{type: type, name: name}) do
+    remove(__MODULE__, spec)
+  end
 
   @spec remove(pid, atom | String.t) :: :ok
   def remove(pid, {type, name}) do
@@ -41,7 +43,7 @@ defmodule KOTL.NameStore do
   end
 
   @spec remove(pid, Location.t) :: :ok
-  def remove(pid, spec) do
+  def remove(pid, spec = %Location{type: type, name: name}) do
     GenServer.cast(pid, {:remove, spec})
   end
 
