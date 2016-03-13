@@ -27,8 +27,18 @@ defmodule KOTL.NameStore do
     GenServer.cast(pid, {:add, spec})
   end
 
+  @spec remove({atom, atom | String.t}) :: :ok
+  def remove({type, name}) do
+    remove(__MODULE__, %Location{type: type, name: name})
+  end
+
   @spec remove(Location.t) :: :ok
   def remove(spec), do: remove(__MODULE__, spec)
+
+  @spec remove(pid, atom | String.t) :: :ok
+  def remove(pid, {type, name}) do
+    remove(pid, %Location{type: type, name: name})
+  end
 
   @spec remove(pid, Location.t) :: :ok
   def remove(pid, spec) do
