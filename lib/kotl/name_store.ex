@@ -3,7 +3,8 @@ defmodule KOTL.NameStore do
   Store for names and locations of other processes, machines and whatnot.
 
   In terms of implementation, is a key/value store, but the purpose is
-  to store locations of different kinds.
+  to store locations of different kinds. This is enforced through using
+  the Location struct and the Location.t type.
   """
   use GenServer
   alias KOTL.Location
