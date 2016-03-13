@@ -6,6 +6,7 @@ defmodule KOTL.NameStore do
   to store locations of different kinds. This is enforced through using
   the Location struct and the Location.t type.
   """
+
   use GenServer
   alias KOTL.Location
 
