@@ -20,10 +20,14 @@ defmodule KOTL.NameStore do
   end
 
   @spec add(Location.t) :: :ok
-  def add(spec = %Location{type: type, name: name}), do: add(__MODULE__, spec)
+  def add(spec = %Location{type: type, name: name})
+  when not is_nil(type) and not is_nil(name) do
+    add(__MODULE__, spec)
+  end
 
   @spec add(pid, Location.t) :: :ok
-  def add(pid, spec = %Location{type: type, name: name}) do
+  def add(pid, spec = %Location{type: type, name: name})
+  when not is_nil(type) and not is_nil(name) do
     GenServer.cast(pid, {:add, spec})
   end
 
@@ -33,7 +37,8 @@ defmodule KOTL.NameStore do
   end
 
   @spec remove(Location.t) :: :ok
-  def remove(spec = %Location{type: type, name: name}) do
+  def remove(spec = %Location{type: type, name: name})
+  when not is_nil(type) and not is_nil(name) do
     remove(__MODULE__, spec)
   end
 
@@ -43,7 +48,8 @@ defmodule KOTL.NameStore do
   end
 
   @spec remove(pid, Location.t) :: :ok
-  def remove(pid, spec = %Location{type: type, name: name}) do
+  def remove(pid, spec = %Location{type: type, name: name})
+  when not is_nil(type) and not is_nil(name) do
     GenServer.cast(pid, {:remove, spec})
   end
 
