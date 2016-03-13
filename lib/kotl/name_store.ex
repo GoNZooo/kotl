@@ -20,9 +20,7 @@ defmodule KOTL.NameStore do
   end
 
   @spec add(Location.t) :: :ok
-  def add(spec) do
-    add(__MODULE__, spec)
-  end
+  def add(spec), do: add(__MODULE__, spec)
 
   @spec add(pid, Location.t) :: :ok
   def add(pid, spec) do
@@ -30,9 +28,7 @@ defmodule KOTL.NameStore do
   end
 
   @spec remove(Location.t) :: :ok
-  def remove(spec) do
-    remove(__MODULE__, spec)
-  end
+  def remove(spec), do: remove(__MODULE__, spec)
 
   @spec remove(pid, Location.t) :: :ok
   def remove(pid, spec) do
@@ -40,9 +36,7 @@ defmodule KOTL.NameStore do
   end
 
   @spec names :: map
-  def names do
-    names(__MODULE__)
-  end
+  def names, do: names(__MODULE__)
 
   @spec names(pid) :: map
   def names(pid) do
