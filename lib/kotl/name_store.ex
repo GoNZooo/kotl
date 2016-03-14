@@ -14,51 +14,41 @@ defmodule KOTL.NameStore do
   # API #
   #######
 
-  def start_link(names \\ _init_locations(Application.get_env(:kotl, :names)),
+  def start_link(locations \\ _init_locations(Application.get_env(:kotl, :locations)),
                  opts \\ [name: __MODULE__]) do
-    GenServer.start_link(__MODULE__, names, opts)
+    GenServer.start_link(__MODULE__, locations, opts)
   end
 
   @spec add(Location.t) :: :ok
-  def add(spec = %Location{type: type, name: name})
+  def add(location = %Location{type: type, name: name})
   when not is_nil(type) and not is_nil(name) do
-    add(__MODULE__, spec)
+    add(__MODULE__, location)
   end
 
   @spec add(pid, Location.t) :: :ok
-  def add(pid, spec = %Location{type: type, name: name})
+  def add(pid, location = %Location{type: type, name: name})
   when not is_nil(type) and not is_nil(name) do
-    GenServer.cast(pid, {:add, spec})
-  end
-
-  @spec remove({atom, atom | String.t}) :: :ok
-  def remove({type, name}) do
-    remove(__MODULE__, %Location{type: type, name: name})
+    GenServer.cast(pid, {:add, location})
   end
 
   @spec remove(Location.t) :: :ok
-  def remove(spec = %Location{type: type, name: name})
+  def remove(location = %Location{type: type, name: name})
   when not is_nil(type) and not is_nil(name) do
-    remove(__MODULE__, spec)
-  end
-
-  @spec remove(pid, atom | String.t) :: :ok
-  def remove(pid, {type, name}) do
-    remove(pid, %Location{type: type, name: name})
+    remove(__MODULE__, location)
   end
 
   @spec remove(pid, Location.t) :: :ok
-  def remove(pid, spec = %Location{type: type, name: name})
+  def remove(pid, location = %Location{type: type, name: name})
   when not is_nil(type) and not is_nil(name) do
-    GenServer.cast(pid, {:remove, spec})
+    GenServer.cast(pid, {:remove, location})
   end
 
-  @spec names :: [Location.t]
-  def names, do: names(__MODULE__)
+  @spec locations :: [Location.t]
+  def locations, do: names(__MODULE__)
 
-  @spec names(pid) :: [Location.t]
-  def names(pid) do
-    GenServer.call(pid, :names)
+  @spec locations(pid) :: [Location.t]
+  def locations(pid) do
+    GenServer.call(pid, :locations)
   end
 
   @spec search(:name, atom | String.t) :: [Location.t]
