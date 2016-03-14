@@ -48,24 +48,34 @@ defmodule KOTL.NameStore do
     GenServer.call(pid, :locations)
   end
 
-  @spec search(:name, atom | String.t) :: [Location.t]
-  def search(:name, name) do
-    search(__MODULE__, :name, name)
+  @spec lookup(:name, atom | String.t) :: [Location.t]
+  def lookup(:name, name) do
+    lookup(__MODULE__, :name, name)
   end
 
-  @spec search(:type, atom) :: [Location.t]
-  def search(:type, type) do
-    search(__MODULE__, :type, type)
+  @spec lookup(:type, atom) :: [Location.t]
+  def lookup(:type, type) do
+    lookup(__MODULE__, :type, type)
   end
 
-  @spec search(pid, :name, atom | String.t) :: [Location.t]
-  def search(pid, :name, name) do
-    GenServer.call(pid, {:search, :name, name})
+  @spec lookup(:location, (atom | String.t)) :: [Location.t]
+  def lookup(:location, location) do
+    lookup(__MODULE__, :location, location)
   end
 
-  @spec search(pid, :type, atom) :: [Location.t]
-  def search(pid, :type, type) when is_atom(type) do
-    GenServer.call(pid, {:search, :type, type})
+  @spec lookup(pid, :name, atom | String.t) :: [Location.t]
+  def lookup(pid, :name, name) do
+    GenServer.call(pid, {:lookup, :name, name})
+  end
+
+  @spec lookup(pid, :type, atom) :: [Location.t]
+  def lookup(pid, :type, type) when is_atom(type) do
+    GenServer.call(pid, {:lookup, :type, type})
+  end
+
+  @spec lookup(pid, :location, (atom | String.t)) :: [Location.t]
+  def lookup(pid, :location, location) do
+    GenServer.call(pid, {:lookup, :location, location})
   end
 
   ############
@@ -97,13 +107,18 @@ defmodule KOTL.NameStore do
     {:reply, locations, locations}
   end
 
-  def handle_call({:search, :name, name}, _from, locations) do
+  def handle_call({:lookup, :name, name}, _from, locations) do
     found = Enum.filter(locations, &(&1.name == name))
     {:reply, found, locations}
   end
 
-  def handle_call({:search, :type, type}, _from, locations) do
+  def handle_call({:lookup, :type, type}, _from, locations) do
     found = Enum.filter(locations, &(&1.type == type))
+    {:reply, found, locations}
+  end
+
+  def handle_call({:lookup, :location, location}, _from, locations) do
+    found = Enum.filter(locations, &(&1.location == location))
     {:reply, found, locations}
   end
 end
