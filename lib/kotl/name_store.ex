@@ -66,9 +66,19 @@ defmodule KOTL.NameStore do
     search(__MODULE__, :name, name)
   end
 
+  @spec search(:type, atom) :: [Location.t]
+  def search(:type, type) do
+    search(__MODULE__, :type, type)
+  end
+
   @spec search(pid, :name, atom | String.t) :: [Location.t]
   def search(pid, :name, name) do
     GenServer.call(pid, {:search, :name, name})
+  end
+
+  @spec search(pid, :type, atom) :: [Location.t]
+  def search(pid, :type, type) when is_atom(type) do
+    GenServer.call(pid, {:search, :type, type})
   end
 
   ############
@@ -82,26 +92,31 @@ defmodule KOTL.NameStore do
         end)
   end
 
-  def init(names) do
-    {:ok, names}
+  def init(locations) do
+    {:ok, locations}
   end
 
-  def handle_cast({:add, spec}, names) do
-    new_names = [spec | names]
-    {:noreply, new_names}
+  def handle_cast({:add, spec}, locations) do
+    new_locations = [spec | locations]
+    {:noreply, new_locations}
   end
 
-  def handle_cast({:remove, spec}, names) do
-    new_names = Enum.reject(names, &(&1 == spec))
-    {:noreply, new_names}
+  def handle_cast({:remove, spec}, locations) do
+    new_locations = Enum.reject(locations, &(&1 == spec))
+    {:noreply, new_locations}
   end
 
-  def handle_call(:names, _from, names) do
-    {:reply, names, names}
+  def handle_call(:locations, _from, locations) do
+    {:reply, locations, locations}
   end
 
-  def handle_call({:search, :name, name}, _from, names) do
-    found_names = Enum.filter(names, &(&1.name == name))
-    {:reply, found_names, names}
+  def handle_call({:search, :name, name}, _from, locations) do
+    found = Enum.filter(locations, &(&1.name == name))
+    {:reply, found, locations}
+  end
+
+  def handle_call({:search, :type, type}, _from, locations) do
+    found = Enum.filter(locations, &(&1.type == type))
+    {:reply, found, locations}
   end
 end
