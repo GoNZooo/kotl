@@ -32,10 +32,7 @@ defmodule KOTL.NameStore do
   end
 
   @spec remove(Location.t) :: :ok
-  def remove(location = %Location{type: type, name: name})
-  when not is_nil(type) and not is_nil(name) do
-    remove(__MODULE__, location)
-  end
+  def remove(location), do: remove(__MODULE__, location)
 
   @spec remove(pid, Location.t) :: :ok
   def remove(pid, location = %Location{type: type, name: name})
@@ -44,7 +41,7 @@ defmodule KOTL.NameStore do
   end
 
   @spec locations :: [Location.t]
-  def locations, do: names(__MODULE__)
+  def locations, do: locations(__MODULE__)
 
   @spec locations(pid) :: [Location.t]
   def locations(pid) do
