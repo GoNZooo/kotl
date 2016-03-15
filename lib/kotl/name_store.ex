@@ -107,18 +107,9 @@ defmodule KOTL.NameStore do
     {:reply, locations, locations}
   end
 
-  def handle_call({:lookup, :name, name}, _from, locations) do
-    found = Enum.filter(locations, &(&1.name == name))
+  def handle_call({:lookup, field, value}, _from, locations) do
+    found = Enum.filter(locations, &(Map.get(&1, field) == value))
     {:reply, found, locations}
   end
 
-  def handle_call({:lookup, :type, type}, _from, locations) do
-    found = Enum.filter(locations, &(&1.type == type))
-    {:reply, found, locations}
-  end
-
-  def handle_call({:lookup, :location, location}, _from, locations) do
-    found = Enum.filter(locations, &(&1.location == location))
-    {:reply, found, locations}
-  end
 end
