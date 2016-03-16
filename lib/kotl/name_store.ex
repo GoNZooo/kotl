@@ -14,9 +14,9 @@ defmodule KOTL.NameStore do
   # API #
   #######
 
-  def start_link(locations \\ _init_locations(Application.get_env(:kotl, :locations)),
+  def start_link(locs \\ _init_locs(Application.get_env(:kotl, :locations)),
                  opts \\ [name: __MODULE__]) do
-    GenServer.start_link(__MODULE__, locations, opts)
+    GenServer.start_link(__MODULE__, locs, opts)
   end
 
   @spec add(Location.t) :: :ok
@@ -82,7 +82,7 @@ defmodule KOTL.NameStore do
   # Internal #
   ############
 
-  defp _init_locations(locs) do
+  defp _init_locs(locs) do
     Enum.map(locs,
       fn %{type: type, name: name, location: location} ->
         %Location{type: type, name: name, location: location}
