@@ -1,6 +1,12 @@
 defmodule KOTL.Monitor do
   use GenServer
 
+  @todo"""
+  Integrate result storing as well as make strategy for continued checking
+  of monitorees. Implement an incremental backoff strategy so that an unavailable
+  host isn't pinged as much after longer unavailability.
+  """
+
   #######
   # API #
   #######
