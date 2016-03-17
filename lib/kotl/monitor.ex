@@ -1,10 +1,6 @@
 defmodule KOTL.Monitor do
   use GenServer
 
-  # TODO: Create / come up with nice format for storing info about
-  # the monitorees, so that one can story history about the availability,
-  # or at least information about the current status of the monitorees
-
   #######
   # API #
   #######
