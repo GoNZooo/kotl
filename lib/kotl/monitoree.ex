@@ -10,6 +10,6 @@ defmodule KOTL.Monitoree do
   historical data from the list of changes in status.
   """
   @type t :: %KOTL.Monitoree{location: KOTL.Location.t,
-                             data: [KOTL.Heartbeat.t]}
-  defstruct [:location, :data]
+                             changes: [KOTL.Heartbeat.t]}
+  defstruct [:location, :changes]
 end
