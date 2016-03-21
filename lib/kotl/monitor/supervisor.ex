@@ -1,7 +1,7 @@
 defmodule KOTL.Monitor.Supervisor do
   @moduledoc"""
   Module to keep track of and supervise the Monitors. This is interacted with
-  by the Monitor.Manager and only through that. 
+  by the Monitor.Manager and only through that.
   """
   use Supervisor
 
@@ -19,6 +19,10 @@ defmodule KOTL.Monitor.Supervisor do
   @spec start_child(KOTL.Monitoree.t) :: Supervisor.Spec.on_start
   def start_child(monitoree) do
     Task.Supervisor.start_child(__MODULE__, KOTL.Monitor, :monitor, [monitoree])
+  end
+
+  def terminate_child(monitoree) do
+    KOTL.Manager.whereis(monitoree) |> Task.Supervisor.terminate_child
   end
 
   ############

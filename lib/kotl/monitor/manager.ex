@@ -74,7 +74,7 @@ defmodule KOTL.Monitor.Manager do
   end
 
   def handle_cast({:remove, monitoree}, monitorees) do
-    # TODO: Create stopping of monitoring.
+    MonSup.terminate_child(monitoree)
     new_monitorees = Map.delete(monitorees, monitoree)
     {:noreply, new_monitorees}
   end
