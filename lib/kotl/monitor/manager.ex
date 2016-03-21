@@ -1,5 +1,7 @@
 defmodule KOTL.Monitor.Manager do
   use GenServer
+  alias KOTL.Monitoree
+  alias KOTL.Monitor.Supervisor, as: MonSup
 
   @todo"""
   Integrate result storing as well as make strategy for continued checking
@@ -39,27 +41,41 @@ defmodule KOTL.Monitor.Manager do
     GenServer.call(pid, :monitorees)
   end
 
+  def whereis(monitoree) do
+    whereis(__MODULE__, monitoree)
+  end
+
+  def whereis(pid, monitoree) do
+    GenServer.call(pid, {:whereis, monitoree})
+  end
+
   ############
   # Internal #
   ############
 
   def init(monitorees) do
-    Enum.each(monitorees, &(KOTL.Monitor.Supervisor.start_child(&1)))
-    {:ok, monitorees}
+    monitoree_hash = Enum.map(monitorees, &({MonSup.start_child(&1), &1}))
+    |> Enum.into(%{}, fn {{:ok, pid}, mon} -> {mon, pid} end)
+
+    {:ok, monitoree_hash}
   end
 
   def handle_call(:monitorees, _from, monitorees) do
     {:reply, monitorees, monitorees}
   end
 
-  def handle_cast({:add, monitoree}, monitorees) do
-    KOTL.Monitor.Supervisor.start_child(monitoree)
-    {:noreply, [monitoree | monitorees]}
+  def handle_call({:whereis, monitoree}, _from, monitorees) do
+    {:reply, Map.get(monitoree), monitorees}
+  end
+
+  def handle_cast({:add, mon}, monitorees) do
+    new_monitorees = Map.put(monitorees, mon, MonSup.start_child(mon))
+    {:noreply, new_monitorees}
   end
 
   def handle_cast({:remove, monitoree}, monitorees) do
     # TODO: Create stopping of monitoring.
-    new_monitorees = Enum.reject(monitorees, &(&1 == monitoree))
+    new_monitorees = Map.delete(monitorees, monitoree)
     {:noreply, new_monitorees}
   end
 end
