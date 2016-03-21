@@ -5,8 +5,9 @@ defmodule KOTL.Monitoree do
   for example, a host that will be pinged regularly or a process/node that will
   be pinged in much the same way.
 
-  It embeds a list of heartbeats (results comprised of datetime + response time)
-  to store the historical data.
+  It embeds a list of heartbeats (a datetime + status, signifying a change in
+  that status.) to store the historical data. This means that we can reconstruct
+  historical data from the list of changes in status.
   """
   @type t :: %KOTL.Monitoree{location: KOTL.Location.t,
                              data: [KOTL.Heartbeat.t]}
