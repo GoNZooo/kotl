@@ -1,6 +1,4 @@
 defmodule KOTL.Monitor do
-  alias KOTL.Monitor.Supervisor, as: MonSup
-  alias KOTL.Monitor.Manager
   #######
   # API #
   #######
