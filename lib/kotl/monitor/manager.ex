@@ -3,12 +3,6 @@ defmodule KOTL.Monitor.Manager do
   alias KOTL.Monitoree
   alias KOTL.Monitor.Supervisor, as: MonSup
 
-  @todo"""
-  Integrate result storing as well as make strategy for continued checking
-  of monitorees. Implement an incremental backoff strategy so that an unavailable
-  host isn't pinged as much after longer unavailability.
-  """
-
   #######
   # API #
   #######
@@ -70,12 +64,15 @@ defmodule KOTL.Monitor.Manager do
 
   def handle_cast({:add, mon}, monitorees) do
     new_monitorees = Map.put(monitorees, mon, MonSup.start_child(mon))
+
     {:noreply, new_monitorees}
   end
 
   def handle_cast({:remove, monitoree}, monitorees) do
-    # TODO: Create stopping of monitoring.
+    child_pid = Map.get(monitorees, monitoree)
+    MonSup.terminate_child(child_pid)
     new_monitorees = Map.delete(monitorees, monitoree)
+
     {:noreply, new_monitorees}
   end
 end
