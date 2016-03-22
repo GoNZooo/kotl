@@ -23,7 +23,7 @@ defmodule KOTL.Monitor.Supervisor do
 
   @spec terminate_child(pid) :: :ok
   def terminate_child(child_pid) do
-    Task.Supervisor.terminate_child(child_pid)
+    Task.Supervisor.terminate_child(__MODULE__, child_pid)
   end
 
   ############
