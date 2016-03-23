@@ -64,7 +64,8 @@ defmodule KOTL.Monitor.Manager do
   end
 
   def handle_cast({:remove, monitoree}, monitorees) do
-    Map.get(monitorees, monitoree) |> MonSup.terminate_child
+    {:ok, pid} = Map.get(monitorees, monitoree) 
+    MonSup.terminate_child(pid)
     new_monitorees = Map.delete(monitorees, monitoree)
 
     {:noreply, new_monitorees}
