@@ -5,6 +5,6 @@ defmodule KOTL.Heartbeat do
   This means that we'll store the last change of the status.
   """
   @type t :: %KOTL.Heartbeat{datetime: Timex.DateTime.t,
-                             status: atom}
+                             status: any}
   defstruct [:datetime, :status]
 end
