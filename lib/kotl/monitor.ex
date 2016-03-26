@@ -1,22 +1,23 @@
 defmodule KOTL.Monitor do
-  alias KOTL.Monitoree
-  alias KOTL.Location
+  alias KOTL.ID
   alias KOTL.Heartbeat
 
-  def monitor(monitoree = %Monitoree{location: loc = %Location{name: name,
-                                                               location: pid,
-                                                               type: :pid},
-                                     changes: changes}) do
-    last_change = List.last(changes)
-    last_status = last_change.status
-    current_status = Process.alive?(pid)
-    if last_status == current_status do
-      current_datetime = Timex.DateTime.universal
-      %Monitoree{location: loc,
-                 changes: changes ++ %Heartbeat{datetime: current_datetime,
-                                                status: current_status}}
-    else
-      monitoree
-    end
+  @spec heartbeat(%{type: :pid, name: (atom | String.t)}) :: Heartbeat.t
+  def heartbeat(id = %ID{type: :pid}) do
+    datetime = Timex.DateTime.universal
+    status = KOTL.NameStore.lookup(id) |> Process.alive?
+    %Heartbeat{datetime: datetime, status: status}
+  end
+
+  @spec heartbeat(%{type: :node, name: (atom | String.t)}) :: Heartbeat.t
+  def heartbeat(id = %ID{type: :node}) do
+    datetime = Timex.DateTime.universal
+    status = KOTL.NameStore.lookup(id) |> Node.ping
+    %Heartbeat{datetime: datetime, status: status}
+  end
+
+  @spec check(ID.t) :: :ok
+  def check(id) do
+    KOTL.Monitor.Manager.add_heartbeat(id, heartbeat(id))
   end
 end
