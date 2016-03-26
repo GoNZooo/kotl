@@ -30,6 +30,30 @@ will give you the list of the monitorees and their recent status changes:
     %{%KOTL.ID{name: :remote,
        type: :node} => [%KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:23:45Z)>,
            status: :pong}]}
+           
+When a monitoree's status changes the change will be logged in the list of the
+monitorees, giving something like the following:
+
+    iex(local@omniknight)5> KOTL.Monitor.Manager.monitorees
+    %{%KOTL.ID{name: :remote,
+       type: :node} => [%KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:34:45Z)>,
+           status: :pang},
+              %KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:23:45Z)>, status: :pong}]}
+
+The first item in the status list is now a `%Heartbeat{}` struct with the status
+`:pang`, which indicates that the node has gone down.
+
+If it were to resurface, it would look something like this:
+
+    iex(local@omniknight)6> KOTL.Monitor.Manager.monitorees
+    %{%KOTL.ID{name: :remote,
+       type: :node} => [%KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:35:45Z)>,
+           status: :pong},
+              %KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:34:45Z)>, status: :pang},
+                 %KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:23:45Z)>, status: :pong}]}
+
+We now have a sequence of status updates, logged only when they differ from
+eachother, meaning that we have a log of relevant status changes.
 
 ## How do I install it?
 Currently, KOTL is only available through GitHub.
