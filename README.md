@@ -41,7 +41,7 @@ monitorees, giving something like the following:
               %KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:23:45Z)>, status: :pong}]}
 
 The first item in the status list is now a `%Heartbeat{}` struct with the status
-`:pang`, which indicates that the node has gone down.
+`:pang`, which indicates that the node is not responsive.
 
 If it were to resurface, it would look something like this:
 
