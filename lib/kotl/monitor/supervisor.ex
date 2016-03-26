@@ -5,8 +5,6 @@ defmodule KOTL.Monitor.Supervisor do
   """
   use Supervisor
 
-  alias KOTL.Monitoree
-
   #######
   # API #
   #######
@@ -16,14 +14,9 @@ defmodule KOTL.Monitor.Supervisor do
     Task.Supervisor.start_link(opts)
   end
 
-  @spec start_child(KOTL.Monitoree.t) :: Supervisor.Spec.on_start
-  def start_child(monitoree) do
-    Task.Supervisor.start_child(__MODULE__, KOTL.Monitor, :monitor, [monitoree])
-  end
-
-  @spec terminate_child(pid) :: :ok
-  def terminate_child(child_pid) do
-    Task.Supervisor.terminate_child(__MODULE__, child_pid)
+  @spec start_child(ID.t) :: Supervisor.Spec.on_start
+  def start_child(id) do
+    Task.Supervisor.start_child(__MODULE__, KOTL.Monitor, :check, [id])
   end
 
   ############
