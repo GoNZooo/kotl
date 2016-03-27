@@ -13,7 +13,7 @@ We start another session (loading KOTL is not necessary in this one):
 In our 'local' session we'll create an ID and add it to the NameStore:
 
     iex(local@omniknight)1> id = %KOTL.ID{type: :node, name: :remote}
-    %KOTL.ID{name: :remote, type: :node}
+    #ID<node, remote>
     iex(local@omniknight)2> KOTL.NameStore.add(id, :remote@omniknight)
     :ok
     
@@ -27,18 +27,14 @@ a first lookup will be done of the node and calling `Monitor.Manager.monitorees`
 will give you the list of the monitorees and their recent status changes:
 
     iex(local@omniknight)4> KOTL.Monitor.Manager.monitorees
-    %{%KOTL.ID{name: :remote,
-       type: :node} => [%KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:23:45Z)>,
-           status: :pong}]}
+    %{#ID<node, remote> => [#Heartbeat<2016-03-27T21:16:53+00:00 -> pong>]}
            
 When a monitoree's status changes the change will be logged in the list of the
 monitorees, giving something like the following:
 
     iex(local@omniknight)5> KOTL.Monitor.Manager.monitorees
-    %{%KOTL.ID{name: :remote,
-       type: :node} => [%KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:34:45Z)>,
-           status: :pang},
-              %KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:23:45Z)>, status: :pong}]}
+    %{#ID<node, remote> => [#Heartbeat<2016-03-27T21:21:53+00:00 -> pang>,
+       #Heartbeat<2016-03-27T21:16:53+00:00 -> pong>]}
 
 The first item in the status list is now a `%Heartbeat{}` struct with the status
 `:pang`, which indicates that the node is not responsive.
@@ -46,11 +42,9 @@ The first item in the status list is now a `%Heartbeat{}` struct with the status
 If it were to resurface, it would look something like this:
 
     iex(local@omniknight)6> KOTL.Monitor.Manager.monitorees
-    %{%KOTL.ID{name: :remote,
-       type: :node} => [%KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:35:45Z)>,
-           status: :pong},
-              %KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:34:45Z)>, status: :pang},
-                 %KOTL.Heartbeat{datetime: #<DateTime(2016-03-26T21:23:45Z)>, status: :pong}]}
+    %{#ID<node, remote> => [#Heartbeat<2016-03-27T22:28:56+00:00 -> pong>,
+       #Heartbeat<2016-03-27T21:21:53+00:00 -> pang>,
+       #Heartbeat<2016-03-27T21:16:53+00:00 -> pong>]}
 
 We now have a sequence of status updates, logged only when they differ from
 eachother, meaning that we have a log of relevant status changes.
