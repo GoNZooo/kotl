@@ -6,4 +6,11 @@ defmodule KOTL.Heartbeat do
   """
   @type t :: %KOTL.Heartbeat{datetime: Timex.DateTime.t, status: any}
   defstruct [:datetime, :status]
+
+  defimpl Inspect, for: KOTL.Heartbeat do
+    def inspect(%KOTL.Heartbeat{datetime: datetime, status: status}, _) do
+      {:ok, datetime_string} = Timex.format(datetime, "%FT%T%:z", :strftime)
+      "#Heartbeat<#{datetime_string} -> #{status}>"
+    end
+  end
 end
