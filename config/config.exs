@@ -29,4 +29,6 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
+config :kotl, interval: 30_000
+
 import_config "priv/names.exs"
