@@ -7,53 +7,48 @@ defmodule KOTL.NameStore do
   """
 
   use GenServer
-  alias KOTL.ID
 
   #######
   # API #
   #######
 
-  @spec start_link([%{type: atom,
-                      name: (atom | String.t),
-                      location: any}],
-                   Keyword.t) :: {:ok, pid}
-  def start_link(locs \\ Application.get_env(:kotl, :locations),
-                 opts \\ [name: __MODULE__]) do
-    GenServer.start_link(__MODULE__, locs, opts)
+  @spec start_link(Keyword.t) :: {:ok, pid}
+  def start_link(opts \\ [name: __MODULE__]) do
+    GenServer.start_link(__MODULE__, %{}, opts)
   end
 
-  @spec add(ID.t, any) :: :ok
+  @spec add(%{name: atom}, any) :: :ok
   def add(id, location) do
     add(__MODULE__, id, location)
   end
 
-  @spec add(pid, ID.t, any) :: :ok
+  @spec add(pid, %{name: atom}, any) :: :ok
   def add(pid, id, location) do
     GenServer.cast(pid, {:add, id, location})
   end
 
-  @spec remove(ID.t) :: :ok
+  @spec remove(%{name: atom}) :: :ok
   def remove(id), do: remove(__MODULE__, id)
 
-  @spec remove(pid, ID.t) :: :ok
+  @spec remove(pid, %{name: atom}) :: :ok
   def remove(pid, id) do
     GenServer.cast(pid, {:remove, id})
   end
 
-  @spec names :: [Location.t]
+  @spec names :: map
   def names, do: names(__MODULE__)
 
-  @spec names(pid) :: [Location.t]
+  @spec names(pid) :: map
   def names(pid) do
     GenServer.call(pid, :names)
   end
 
-  @spec lookup(ID.t) :: any
+  @spec lookup(%{name: atom}) :: any
   def lookup(loc) do
     lookup(__MODULE__, loc)
   end
 
-  @spec lookup(pid, ID.t) :: any
+  @spec lookup(pid, %{name: atom}) :: any
   def lookup(pid, loc) do
     GenServer.call(pid, {:lookup, loc})
   end
@@ -62,13 +57,8 @@ defmodule KOTL.NameStore do
   # Internal #
   ############
 
-  def init(names) do
-    names = names |> Enum.into(%{},
-      fn %{type: type, name: name, location: location} ->
-        {%ID{type: type, name: name}, location}
-      end)
-
-    {:ok, names}
+  def init(%{}) do
+    {:ok, %{}}
   end
 
   def handle_cast({:add, id, location}, locs) do
