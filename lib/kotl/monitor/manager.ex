@@ -1,32 +1,31 @@
 defmodule KOTL.Monitor.Manager do
   use GenServer
-  alias KOTL.ID
 
   #######
   # API #
   #######
 
-  @spec start_link([ID.t], [{atom, any}]) :: {:ok, pid}
+  @spec start_link([%{name: atom}], [{atom, any}]) :: {:ok, pid}
   def start_link(monitorees \\ [], opts \\ [name: __MODULE__]) do
     GenServer.start_link(__MODULE__, monitorees, opts)
   end
 
-  @spec add(ID.t) :: :ok
+  @spec add(%{name: atom}) :: :ok
   def add(monitoree) do
     add(__MODULE__, monitoree)
   end
 
-  @spec add(pid, ID.t) :: :ok
+  @spec add(pid, %{name: atom}) :: :ok
   def add(pid, monitoree) do
     GenServer.cast(pid, {:add, monitoree})
   end
 
-  @spec remove(ID.t) :: :ok
+  @spec remove(%{name: atom}) :: :ok
   def remove(monitoree) do
     remove(__MODULE__, monitoree)
   end
 
-  @spec remove(pid, ID.t) :: :ok
+  @spec remove(pid, %{name: atom}) :: :ok
   def remove(pid, monitoree) do
     GenServer.cast(pid, {:remove, monitoree})
   end
@@ -41,22 +40,22 @@ defmodule KOTL.Monitor.Manager do
     GenServer.call(pid, :monitorees)
   end
 
-  @spec changes(ID.t) :: [Heartbeat.t]
+  @spec changes(%{name: atom}) :: [Heartbeat.t]
   def changes(id) do
     changes(__MODULE__, id)
   end
 
-  @spec changes(pid, ID.t) :: [Heartbeat.t]
+  @spec changes(pid, %{name: atom}) :: [Heartbeat.t]
   def changes(pid, id) do
     GenServer.call(pid, {:changes, id})
   end
 
-  @spec add_heartbeat(ID.t, Heartbeat.t) :: :ok
+  @spec add_heartbeat(%{name: atom}, Heartbeat.t) :: :ok
   def add_heartbeat(id, heartbeat) do
     add_heartbeat(__MODULE__, id, heartbeat)
   end
 
-  @spec add_heartbeat(ID.t, Heartbeat.t) :: :ok
+  @spec add_heartbeat(%{name: atom}, Heartbeat.t) :: :ok
   def add_heartbeat(pid, id, heartbeat) do
     GenServer.cast(pid, {:add_heartbeat, id, heartbeat})
   end
@@ -96,7 +95,7 @@ defmodule KOTL.Monitor.Manager do
     new_changes =
       case changes do
         [] -> [heartbeat]
-        [last_change | rest] ->
+        [last_change | _] ->
           if last_change.status != heartbeat.status do
             [heartbeat | changes]
           else
