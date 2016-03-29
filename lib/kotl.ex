@@ -9,7 +9,7 @@ defmodule KOTL do
     children = [
       # Define workers and child supervisors to be supervised
       # worker(KOTL.Worker, [arg1, arg2, arg3]),
-      worker(KOTL.NameStore, [[]]), # empty list as first arg
+      worker(KOTL.NameStore, []), # empty list as first arg
       supervisor(KOTL.Monitor.Supervisor, []),
       worker(KOTL.Monitor.Manager, []),
       supervisor(KOTL.Monitor.Spawner.Supervisor, []),
