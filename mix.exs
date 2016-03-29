@@ -14,7 +14,7 @@ defmodule KOTL.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:tzdata, :logger],
+    [applications: [:tzdata, :gen_icmp, :logger],
      mod: {KOTL, []}]
   end
 
@@ -28,6 +28,7 @@ defmodule KOTL.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:timex, "~> 2.1"}]
+    [{:timex, "~> 2.1"},
+     {:gen_icmp, git: "https://github.com/msantos/gen_icmp"}]
   end
 end
