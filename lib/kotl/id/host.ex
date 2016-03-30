@@ -19,6 +19,7 @@ defmodule KOTL.ID.Host do
                  [{response, _, _, _, _, _}] ->
                    response
                end
+
       %KOTL.Heartbeat{datetime: datetime, status: status}
     end
   end
