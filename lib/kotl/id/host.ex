@@ -7,10 +7,6 @@ defmodule KOTL.ID.Host do
     end
   end
 
-  defp process_response(response) when is_tuple(response) do
-    
-  end
-
   defimpl KOTL.Monitor.Check, for: KOTL.ID.Host do
     def heartbeat(id) do
       datetime = Timex.DateTime.universal
