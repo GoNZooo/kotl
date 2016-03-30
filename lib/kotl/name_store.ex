@@ -62,6 +62,7 @@ defmodule KOTL.NameStore do
   end
 
   def handle_cast({:add, id, location}, locs) do
+    KOTL.Monitor.Manager.add(id)
     {:noreply, Map.put(locs, id, location)}
   end
 
