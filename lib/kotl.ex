@@ -12,7 +12,6 @@ defmodule KOTL do
       worker(KOTL.NameStore, []), # empty list as first arg
       supervisor(KOTL.Monitor.Supervisor, []),
       worker(KOTL.Monitor.Manager, []),
-      supervisor(KOTL.Monitor.Spawner.Supervisor, []),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

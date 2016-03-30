@@ -1,5 +1,6 @@
 defmodule KOTL.Monitor.Manager do
   use GenServer
+  alias KOTL.Monitor.Supervisor, as: MonitorSuper
 
   #######
   # API #
@@ -64,8 +65,12 @@ defmodule KOTL.Monitor.Manager do
   # Internal #
   ############
 
+  defp init_monitor(id) do
+    %{changes: [], pid: MonitorSuper.start_child(id)}
+  end
+
   def init(monitorees) do
-    monitoree_map = Enum.into(monitorees, %{}, &({&1, []}))
+    monitoree_map = Enum.into(monitorees, %{}, &({&1, init_monitor(&1)}))
 
     {:ok, monitoree_map}
   end
@@ -79,19 +84,20 @@ defmodule KOTL.Monitor.Manager do
   end
 
   def handle_cast({:add, mon}, monitorees) do
-    new_monitorees = Map.put(monitorees, mon, [])
+    new_monitorees = Map.put(monitorees, mon, init_monitor(mon))
 
     {:noreply, new_monitorees}
   end
 
   def handle_cast({:remove, mon}, monitorees) do
+    MonitorSuper.terminate_child(mon.pid)
     new_monitorees = Map.delete(monitorees, mon)
 
     {:noreply, new_monitorees}
   end
 
   def handle_cast({:add_heartbeat, id, heartbeat}, monitorees) do
-    changes = Map.get(monitorees, id, [])
+    monitoree_data = %{changes: changes} = Map.get(monitorees, id, :no_changes)
     new_changes =
       case changes do
         [] -> [heartbeat]
@@ -102,7 +108,9 @@ defmodule KOTL.Monitor.Manager do
             changes
           end
       end
-    new_monitorees = Map.put(monitorees, id, new_changes)
+    new_monitorees = Map.put(monitorees,
+                             id,
+                             %{monitoree_data | changes: new_changes})
 
     {:noreply, new_monitorees}
   end

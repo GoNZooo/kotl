@@ -14,9 +14,14 @@ defmodule KOTL.Monitor.Supervisor do
     Task.Supervisor.start_link(opts)
   end
 
-  @spec start_child(ID.t) :: Supervisor.Spec.on_start
+  @spec start_child(%{name: atom}) :: Supervisor.Spec.on_start
   def start_child(id) do
     Task.Supervisor.start_child(__MODULE__, KOTL.Monitor, :check, [id])
+  end
+
+  @spec terminate_child(%{name: atom}) :: :ok
+  def terminate_child(pid) do
+    Task.Supervisor.terminate_child(pid)
   end
 
   ############

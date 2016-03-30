@@ -1,10 +1,5 @@
 # KOTL
 
-## TODO (no-spawner branch)
-Make it so that spawned monitors do not go through a spawner process but is
-instead started when a process is added to the monitor. This will then use an
-internal timer to determine when to check the monitoree.
-
 ## What is it?
 KOTL is a nameserver application with built-in monitoring for registered items.
 
