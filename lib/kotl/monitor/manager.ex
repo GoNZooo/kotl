@@ -97,7 +97,7 @@ defmodule KOTL.Monitor.Manager do
   end
 
   def handle_cast({:add_heartbeat, id, heartbeat}, monitorees) do
-    monitoree_data = %{changes: changes} = Map.get(monitorees, id, :no_changes)
+    monitoree_data = %{changes: changes} = Map.get(monitorees, id)
     new_changes =
       case changes do
         [] -> [heartbeat]
