@@ -19,12 +19,12 @@ defmodule KOTL.NameStore do
 
   @spec add(%{name: atom}, any) :: :ok
   def add(id, location) do
-    add(__MODULE__, id, location)
+    add(__MODULE__, id, location, [auto_add: true])
   end
 
-  @spec add(pid, %{name: atom}, any) :: :ok
-  def add(pid, id, location) do
-    GenServer.cast(pid, {:add, id, location})
+  @spec add(pid, %{name: atom}, any, Keyword.t) :: :ok
+  def add(pid, id, location, opts) do
+    GenServer.cast(pid, {:add, id, location, opts})
   end
 
   @spec remove(%{name: atom}) :: :ok
@@ -61,8 +61,12 @@ defmodule KOTL.NameStore do
     {:ok, %{}}
   end
 
-  def handle_cast({:add, id, location}, locs) do
+  def handle_cast({:add, id, location, [auto_add: true]}, locs) do
     KOTL.Monitor.Manager.add(id)
+    {:noreply, Map.put(locs, id, location)}
+  end
+  
+  def handle_cast({:add, id, location, [auto_add: false]}, locs) do
     {:noreply, Map.put(locs, id, location)}
   end
 
