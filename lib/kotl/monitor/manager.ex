@@ -66,7 +66,8 @@ defmodule KOTL.Monitor.Manager do
   ############
 
   defp init_monitor(id) do
-    %{changes: [], pid: MonitorSuper.start_child(id)}
+    {:ok, pid} = MonitorSuper.start_child(id)
+    %{changes: [], pid: pid}
   end
 
   def init(monitorees) do
