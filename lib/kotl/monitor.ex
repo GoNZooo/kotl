@@ -1,5 +1,4 @@
 defmodule KOTL.Monitor do
-  alias KOTL.Heartbeat
   alias KOTL.Monitor.Check
 
   @spec check(%{name: atom}) :: :ok
