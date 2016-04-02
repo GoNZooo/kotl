@@ -16,7 +16,7 @@ defmodule KOTL.ID.Process do
     end
 
     def type_to_atom(_), do: :process
-    def up_or_down(_, :pong), do: :up
+    def up_or_down(_, true), do: :up
     def up_or_down(_, _), do: :down
   end
 end
