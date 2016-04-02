@@ -1,6 +1,8 @@
 defmodule KOTL.Monitor.Manager do
   use GenServer
   alias KOTL.Monitor.Supervisor, as: MonitorSuper
+  alias KOTL.Monitor.Check
+  alias KOTL.{Status,Heartbeat}
 
   #######
   # API #
@@ -61,9 +63,29 @@ defmodule KOTL.Monitor.Manager do
     GenServer.cast(pid, {:add_heartbeat, id, heartbeat})
   end
 
+  @spec current_statuses :: map
+  def current_statuses do
+    current_statuses(__MODULE__)
+  end
+
+  @spec current_statuses(pid) :: map
+  def current_statuses(pid) do
+    GenServer.call(pid, :current_statuses)
+  end
+
   ############
   # Internal #
   ############
+
+  defp _current_status({id, %{changes: [%Heartbeat{status: status} | _]}}) do
+    %Status{type: Check.type_to_atom(id),
+            name: id.name,
+            status: Check.up_or_down(id, status)}
+  end
+
+  defp _current_statuses(monitorees) do
+    Enum.map(monitorees, &_current_status/1)
+  end
 
   defp init_monitor(id) do
     {:ok, pid} = MonitorSuper.start_child(id)
@@ -82,6 +104,10 @@ defmodule KOTL.Monitor.Manager do
 
   def handle_call({:changes, id}, _from, monitorees) do
     {:reply, Map.get(monitorees, id), monitorees}
+  end
+
+  def handle_call(:current_statuses, _from, monitorees) do
+    {:reply, _current_statuses(monitorees), monitorees}
   end
 
   def handle_cast({:add, mon}, monitorees) do
