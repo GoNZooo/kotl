@@ -6,12 +6,4 @@ defmodule KOTL.Status do
       "#Status<#{type}, #{name}, #{status}>"
     end
   end
-
-  #defimpl Poison.Encoder, for: KOTL.Status do
-  #  def encode(status, opts) do
-  #    %{type: status.type,
-  #      name: status.name,
-  #      status: status.status} |> Poison.Encoder.encode(opts)
-  #  end
-  #end
 end
