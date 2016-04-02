@@ -30,6 +30,6 @@ defmodule KOTL.Mixfile do
   defp deps do
     [{:timex, "~> 2.1"},
      {:gen_icmp, git: "https://github.com/msantos/gen_icmp"},
-     {:poison, "~> 2.1"}]
+     {:poison, "~> 2.0"}]
   end
 end
