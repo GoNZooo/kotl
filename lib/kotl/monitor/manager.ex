@@ -77,6 +77,12 @@ defmodule KOTL.Monitor.Manager do
   # Internal #
   ############
 
+  defp _current_status({id, %{changes: []}}) do
+    %Status{type: Check.type_to_atom(id),
+            name: id.name,
+            status: :unknown}
+  end
+
   defp _current_status({id, %{changes: [%Heartbeat{status: status} | _]}}) do
     %Status{type: Check.type_to_atom(id),
             name: id.name,
