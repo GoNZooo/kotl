@@ -19,4 +19,8 @@ defmodule KOTL do
     opts = [strategy: :one_for_one, name: KOTL.Supervisor]
     Supervisor.start_link(children, opts)
   end
+
+  def start_link do
+    start(:none, :none)
+  end
 end
