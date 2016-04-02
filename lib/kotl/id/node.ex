@@ -13,5 +13,9 @@ defmodule KOTL.ID.Node do
       status = KOTL.NameStore.lookup(id) |> Node.ping
       %KOTL.Heartbeat{datetime: datetime, status: status}
     end
+
+    def type_to_atom(_), do: :node
+    def up_or_down(_, :pong), do: :up
+    def up_or_down(_, _), do: :down
   end
 end

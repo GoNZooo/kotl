@@ -22,5 +22,9 @@ defmodule KOTL.ID.Host do
 
       %KOTL.Heartbeat{datetime: datetime, status: status}
     end
+
+    def type_to_atom(_), do: :host
+    def up_or_down(_, :ok), do: :up
+    def up_or_down(_, _), do: :down
   end
 end
