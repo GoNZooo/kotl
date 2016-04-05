@@ -13,8 +13,9 @@ defmodule KOTL.NameStore do
   #######
 
   @spec start_link(Keyword.t) :: {:ok, pid}
-  def start_link(opts \\ [name: __MODULE__]) do
-    GenServer.start_link(__MODULE__, %{}, opts)
+  def start_link(names \\ Application.get_env(:kotl, :names),
+                 opts \\ [name: __MODULE__]) do
+    GenServer.start_link(__MODULE__, names, opts)
   end
 
   @spec add(%{name: atom}, any) :: :ok
@@ -57,8 +58,24 @@ defmodule KOTL.NameStore do
   # Internal #
   ############
 
-  def init(%{}) do
-    {:ok, %{}}
+  defp _init_id(%{name: name, location: location, type: :hostname}) do
+    {%KOTL.ID.Host{name: name}, location}
+  end
+
+  defp _init_id(%{name: name, location: location, type: :node}) do
+    {%KOTL.ID.Node{name: name}, location}
+  end
+
+  defp _init_id(%{name: name, location: location, type: :process}) do
+    {%KOTL.ID.Process{name: name}, location}
+  end
+
+  def init(names) do
+    init_names = Enum.into(names, %{}, &_init_id/1)
+    init_names
+    |> Map.keys
+    |> Enum.each(&KOTL.Monitor.Manager.add/1)
+    {:ok, init_names}
   end
 
   def handle_cast({:add, id, location, [auto_add: true]}, locs) do
@@ -71,6 +88,7 @@ defmodule KOTL.NameStore do
   end
 
   def handle_cast({:remove, id}, locs) do
+    KOTL.Monitor.Manager.remove(id)
     {:noreply, Map.delete(locs, id)}
   end
 
