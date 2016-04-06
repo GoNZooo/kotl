@@ -49,7 +49,7 @@ Currently, KOTL is only available through GitHub.
   1. Add KOTL to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:kotl, git: "git://github.com/gonzooo/kotl.git"}]
+          [{:kotl, git: "git://gitlab.com/gonz/kotl.git"}]
         end
 
   2. Ensure KOTL is started before your application:
