@@ -1,4 +1,13 @@
 defmodule KOTL.ID.Website do
+  @moduledoc"""
+  Wodule for specifying that an ID is for a website health check.
+
+  The health check will be done on the URI stored in the name server, so this
+  should be a ping address or the like for the specified server.
+
+  Any error code of 400 or above will be interpreted as ":down", though this
+  might be subject to change.
+  """
   defstruct [:name]
 
   defimpl Inspect, for: KOTL.ID.Website do
