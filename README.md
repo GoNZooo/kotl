@@ -16,15 +16,8 @@ In our 'local' session we'll create an ID and add it to the NameStore:
     #Node<remote>
     iex(local@omniknight)2> KOTL.NameStore.add(node, :remote@omniknight)
     :ok
-    
-    
-We'll now add the ID to our MonitorManager so that it will be monitored:
 
-    iex(local@omniknight)3> KOTL.Monitor.Manager.add(node)
-    :ok
-
-After a certain amount of time (the sleep interval setting in the config)
-a first lookup will be done of the node and calling `Monitor.Manager.monitorees`
+A first lookup will be done of the node and calling `Monitor.Manager.monitorees`
 will give you the list of the monitorees and their recent status changes:
 
     iex(local@omniknight)4> KOTL.Monitor.Manager.monitorees
