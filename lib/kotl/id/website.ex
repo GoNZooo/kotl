@@ -17,9 +17,8 @@ defmodule KOTL.ID.Website do
     end
 
     def type_to_atom(_), do: :website
-    def up_or_down(_, response) when rem(response, 400) >= 0 do
-      :down
-    end
+    def up_or_down(_, response) when response >= 400, do: :down
+    def up_or_down(_, :error), do: :down
     def up_or_down(_, _), do: :up
   end
 end
