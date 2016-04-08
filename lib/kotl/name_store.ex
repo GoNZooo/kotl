@@ -54,6 +54,16 @@ defmodule KOTL.NameStore do
     GenServer.call(pid, {:lookup, loc})
   end
 
+  @spec rename(%{name: atom}, %{name: atom}) :: :ok
+  def rename(old, new) do
+    rename(__MODULE__, old, new)
+  end
+
+  @spec rename(pid, %{name: atom}, %{name: atom}) :: :ok
+  def rename(pid, old, new) do
+    GenServer.cast(pid, {:rename, old, new})
+  end
+
   ############
   # Internal #
   ############
@@ -90,6 +100,18 @@ defmodule KOTL.NameStore do
   def handle_cast({:remove, id}, locs) do
     KOTL.Monitor.Manager.remove(id)
     {:noreply, Map.delete(locs, id)}
+  end
+
+  def handle_cast({:rename, old, new}, locs) do
+    loc = Map.get(locs, old)
+    new_locs =
+      locs
+      |> Map.delete(old)
+      |> Map.put(new, loc)
+    KOTL.Monitor.Manager.remove(old)
+    KOTL.Monitor.Manager.add(new)
+
+    {:noreply, new_locs}
   end
 
   def handle_call(:names, _from, names) do

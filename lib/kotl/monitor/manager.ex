@@ -3,32 +3,33 @@ defmodule KOTL.Monitor.Manager do
   alias KOTL.Monitor.Supervisor, as: MonitorSuper
   alias KOTL.Monitor.Check
   alias KOTL.{Status,Heartbeat}
+  require Logger
 
   #######
   # API #
   #######
 
-  @spec start_link([%{name: atom}], [{atom, any}]) :: {:ok, pid}
+  @spec start_link([%{name: String.t}], [{atom, any}]) :: {:ok, pid}
   def start_link(monitorees \\ [], opts \\ [name: __MODULE__]) do
     GenServer.start_link(__MODULE__, monitorees, opts)
   end
 
-  @spec add(%{name: atom}) :: :ok
+  @spec add(%{name: String.t}) :: :ok
   def add(monitoree) do
     add(__MODULE__, monitoree)
   end
 
-  @spec add(pid, %{name: atom}) :: :ok
+  @spec add(pid, %{name: String.t}) :: :ok
   def add(pid, monitoree) do
     GenServer.cast(pid, {:add, monitoree})
   end
 
-  @spec remove(%{name: atom}) :: :ok
+  @spec remove(%{name: String.t}) :: :ok
   def remove(monitoree) do
     remove(__MODULE__, monitoree)
   end
 
-  @spec remove(pid, %{name: atom}) :: :ok
+  @spec remove(pid, %{name: String.t}) :: :ok
   def remove(pid, monitoree) do
     GenServer.cast(pid, {:remove, monitoree})
   end
@@ -43,22 +44,22 @@ defmodule KOTL.Monitor.Manager do
     GenServer.call(pid, :monitorees)
   end
 
-  @spec changes(%{name: atom}) :: [Heartbeat.t]
+  @spec changes(%{name: String.t}) :: [Heartbeat.t]
   def changes(id) do
     changes(__MODULE__, id)
   end
 
-  @spec changes(pid, %{name: atom}) :: [Heartbeat.t]
+  @spec changes(pid, %{name: String.t}) :: [Heartbeat.t]
   def changes(pid, id) do
     GenServer.call(pid, {:changes, id})
   end
 
-  @spec add_heartbeat(%{name: atom}, Heartbeat.t) :: :ok
+  @spec add_heartbeat(%{name: String.t}, Heartbeat.t) :: :ok
   def add_heartbeat(id, heartbeat) do
     add_heartbeat(__MODULE__, id, heartbeat)
   end
 
-  @spec add_heartbeat(%{name: atom}, Heartbeat.t) :: :ok
+  @spec add_heartbeat(%{name: String.t}, Heartbeat.t) :: :ok
   def add_heartbeat(pid, id, heartbeat) do
     GenServer.cast(pid, {:add_heartbeat, id, heartbeat})
   end
@@ -97,6 +98,11 @@ defmodule KOTL.Monitor.Manager do
     {:ok, pid} = MonitorSuper.start_child(id)
     %{changes: [], pid: pid}
   end
+  
+  defp init_monitor(id, changes) do
+    {:ok, pid} = MonitorSuper.start_child(id)
+    %{changes: changes, pid: pid}
+  end
 
   def init(monitorees) do
     monitoree_map = Enum.into(monitorees, %{}, &({&1, init_monitor(&1)}))
@@ -123,7 +129,8 @@ defmodule KOTL.Monitor.Manager do
   end
 
   def handle_cast({:remove, mon}, monitorees) do
-    MonitorSuper.terminate_child(mon.pid)
+    %{pid: monitor_pid} = Map.get(monitorees, mon)
+    MonitorSuper.terminate_child(monitor_pid)
     new_monitorees = Map.delete(monitorees, mon)
 
     {:noreply, new_monitorees}
