@@ -54,6 +54,27 @@ defmodule KOTL.Monitor.Manager do
     GenServer.call(pid, {:changes, id})
   end
 
+  @spec diff(map) :: map
+  def diff(old_monitorees) do
+    diff(__MODULE__, old_monitorees)
+  end
+
+  @spec diff(pid, map) :: map
+  def diff(pid, old_monitorees) do
+    GenServer.call(pid, {:diff, old_monitorees})
+  end
+
+  @spec diff_current(map) :: [{%{name: String.t}, map}]
+  def diff_current(old_monitorees) do
+    diff_current(__MODULE__, old_monitorees)
+  end
+
+  @spec diff_current(pid, map) :: [{%{name: String.t}, map}]
+  def diff_current(pid, old_monitorees) do
+    diffed = diff(pid, old_monitorees)
+    GenServer.call(pid, {:diff_current, diffed})
+  end
+
   @spec add_heartbeat(%{name: String.t}, Heartbeat.t) :: :ok
   def add_heartbeat(id, heartbeat) do
     add_heartbeat(__MODULE__, id, heartbeat)
@@ -98,7 +119,7 @@ defmodule KOTL.Monitor.Manager do
     {:ok, pid} = MonitorSuper.start_child(id)
     %{changes: [], pid: pid}
   end
-  
+
   defp init_monitor(id, changes) do
     {:ok, pid} = MonitorSuper.start_child(id)
     %{changes: changes, pid: pid}
@@ -120,6 +141,22 @@ defmodule KOTL.Monitor.Manager do
 
   def handle_call(:current_statuses, _from, monitorees) do
     {:reply, _current_statuses(monitorees), monitorees}
+  end
+
+  def handle_call({:diff, monitorees}, _from, monitorees) do
+    {:reply, [], monitorees}
+  end
+  
+  def handle_call({:diff, old_mons}, _from, monitorees) do
+    diff_list = monitorees
+    |> Enum.filter(fn {id, status} -> Map.get(old_mons, id) != status end)
+    |> Enum.into(%{})
+    
+    {:reply, diff_list, monitorees}
+  end
+
+  def handle_call({:diff_current, diffed}, _from, monitorees) do
+    {:reply, _current_statuses(diffed), monitorees}
   end
 
   def handle_cast({:add, mon}, monitorees) do
